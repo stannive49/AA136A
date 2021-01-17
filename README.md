@@ -1,2 +1,2 @@
-# AA136A
+# Spacecraft Design Captone
 AA Senior Capstone
