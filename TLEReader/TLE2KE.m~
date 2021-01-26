@@ -93,8 +93,8 @@ v = [vx, vy, vz];
 
 %Write data to KERV.txt
 fileID = fopen('KERV.txt','w');
-fprintf(fileID,'Position Vector is [%12.8f %12.8f %12.8f] \n', r);
-fprintf(fileID,'Velocity Vector is [%12.8f %12.8f %12.8f] \n', v);
+fprintf(fileID,'Position Vector is [%12.8f\r %12.8f %12.8f] \n', r);
+fprintf(fileID,'Velocity Vector is [%12.8f %12.8f\r %12.8f] \n', v);
 fclose(fileID);
 
 disp('done')
