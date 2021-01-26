@@ -1,2 +1,2 @@
-# Spacecraft Design Captone
+# Spacecraft Design Capstone
 AA Senior Capstone
