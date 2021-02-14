@@ -15,6 +15,11 @@
 
   The sensor communicates over the I2C Bus.
 
+  ------------------------TIPS--------------------------
+  Change this line ----->Wire.begin(2,14);
+  to this      ----->Wire.begin();
+  to allow this sensor to communicate other cpus
+
 *************************************************************/
 
 #include <xCore.h>
@@ -25,25 +30,30 @@
 #define CW01_GREEN 13
 #define CW01_BLUE 5
 
+
 void setup() {
   // Start the Serial Monitor
   Serial.begin(115200);
 
   // Set the RGB Pin directions
-  //pinMode(LED_RED, OUTPUT);
-  //pinMode(LED_GREEN, OUTPUT);
-  //pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(CW01_RED, OUTPUT);
+  pinMode(CW01_GREEN, OUTPUT);
+  pinMode(CW01_BLUE, OUTPUT);
 
   // Start the I2C Comunication
+  #ifdef ESP8266
+  Wire.pins(2, 14);
   Wire.begin();
+  #endif
+  Wire.setClockStretchLimit(15000);
 
   if (!RL0X.begin()) { // <-- enter radio name here
     Serial.println("Check the connector to RL03");
     while (1) {
       // Flash RED to indicate failure
-      digitalWrite(LED_RED, HIGH);
+      digitalWrite(CW01_RED, HIGH);
       delay(100);
-      digitalWrite(LED_RED, LOW);
+      digitalWrite(CW01_RED, LOW);
       delay(100);
     }
   } else {
@@ -56,13 +66,13 @@ void setup() {
 }
 
 void loop() {
-  digitalWrite(LED_BUILTIN,HIGH);
+  digitalWrite(CW01_BLUE,HIGH);
   Serial.println("Waiting");
-  if (RL0X.waitAvailableTimeout(3000)) {
+  //if (RL0X.waitAvailableTimeout(3000)) {
     uint8_t buf[195];
     uint8_t len = sizeof(buf);
     if (RL0X.recv(buf, &len)) {
-      digitalWrite(LED_RED, HIGH);
+      digitalWrite(CW01_RED, HIGH);
       Serial.println("got message: ");
       Serial.println((char*)buf);
       Serial.print("RSSI: ");
@@ -73,10 +83,9 @@ void loop() {
       delay(100);
       RL0X.send(data, sizeof(data));
       Serial.println("Sent a reply");
-      digitalWrite(LED_RED, LOW);
+      digitalWrite(CW01_RED, LOW);
     } else {
       Serial.println("recv failed");
     }
-  }
-  digitalWrite(LED_BUILTIN,LOW);
+  digitalWrite(CW01_BLUE,LOW);
 }
