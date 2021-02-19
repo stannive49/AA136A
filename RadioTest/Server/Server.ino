@@ -41,10 +41,8 @@ void setup() {
   pinMode(CW01_BLUE, OUTPUT);
 
   // Start the I2C Comunication
-  #ifdef ESP8266
   Wire.pins(2, 14);
   Wire.begin();
-  #endif
   Wire.setClockStretchLimit(15000);
 
   if (!RL0X.begin()) { // <-- enter radio name here
@@ -58,7 +56,10 @@ void setup() {
     }
   } else {
     // RL0X Initialized correctly
-    RL0X.setModemConfig(RL0X.Bw31_25Cr48Sf512);
+    //RL0X.setModemConfig(RL0X.Bw125Cr45Sf128);
+    //RL0X.setModemConfig(RL0X.Bw31_25Cr48Sf51);
+    //RL0X.setModemConfig(RL0X.Bw500Cr45Sf128);
+    RL0X.setModemConfig(RL0X.Bw125Cr48Sf4096);
     RL0X.setFrequency(RL03_FREQ);
     RL0X.setTxPower(23, false);
   }
@@ -68,7 +69,7 @@ void setup() {
 void loop() {
   digitalWrite(CW01_BLUE,HIGH);
   Serial.println("Waiting");
-  //if (RL0X.waitAvailableTimeout(3000)) {
+  if (RL0X.waitAvailableTimeout(3000)) {
     uint8_t buf[195];
     uint8_t len = sizeof(buf);
     if (RL0X.recv(buf, &len)) {
@@ -87,5 +88,6 @@ void loop() {
     } else {
       Serial.println("recv failed");
     }
+  }
   digitalWrite(CW01_BLUE,LOW);
 }

@@ -26,9 +26,6 @@
 #include <xRL0x.h>
 
 #define RL03_FREQ 915.0
-#define CW01_RED 12
-#define CW01_GREEN 13
-#define CW01_BLUE 5
 #define Serial SerialUSB
 
 void setup() {
@@ -36,27 +33,32 @@ void setup() {
   Serial.begin(115200);
 
   // Set the RGB Pin directions
-  pinMode(CW01_RED, OUTPUT);
-  pinMode(CW01_GREEN, OUTPUT);
-  pinMode(CW01_BLUE, OUTPUT);
+  //pinMode(CW01_RED, OUTPUT);
+  //pinMode(CW01_GREEN, OUTPUT);
+  //pinMode(CW01_BLUE, OUTPUT);
 
   // Start the I2C Comunication
-  Wire.pins(2, 14);
-  Wire.begin();
+  #ifdef ESP8266
+  Wire.pins(2,14);
   Wire.setClockStretchLimit(15000);
+  #endif
+  Wire.begin();
 
   if (!RL0X.begin()) { // <-- enter radio name here
-    Serial.println("Check the connector to CS11");
+    Serial.println("Check the connector to CR01");
     while (1) {
       // Flash RED to indicate failure
-      digitalWrite(CW01_RED, HIGH);
+      digitalWrite(LED_RED, HIGH);
       delay(100);
-      digitalWrite(CW01_RED, LOW);
+      digitalWrite(LED_RED, LOW);
       delay(100);
     }
   } else {
     // RL0X Initialized correctly
-    RL0X.setModemConfig(RL01.Bw31_25Cr48Sf512);
+    //RL0X.setModemConfig(RL0X.Bw125Cr45Sf128);
+    //RL0X.setModemConfig(RL0X.Bw31_25Cr48Sf51);
+    //RL0X.setModemConfig(RL0X.Bw500Cr45Sf128);
+    RL0X.setModemConfig(RL0X.Bw125Cr48Sf4096);
     RL0X.setFrequency(RL03_FREQ);
     RL0X.setTxPower(23, false);
   }
@@ -65,7 +67,7 @@ void setup() {
 void loop() {
   Serial.println("Sending to RL0X Server");
 
-  digitalWrite(CW01_GREEN, HIGH);
+  digitalWrite(LED_GREEN, HIGH);
 
   uint8_t data[] = "Hello World!";
   delay(100);
@@ -74,7 +76,7 @@ void loop() {
   uint8_t buf[195];
   uint8_t len = sizeof(buf);
 
-  //if (RL0X.waitAvailableTimeout(3000)) {
+  if (RL0X.waitAvailableTimeout(3000)) {
     if (RL0X.recv(buf, &len)) {
       Serial.print("got reply: ");
       Serial.println((char*)buf);
@@ -83,8 +85,8 @@ void loop() {
     } else {
       Serial.println("recv failed");
     }
-//  } else {
-    //digitalWrite(CW01_GREEN, LOW);
-    //Serial.println("No reply, is the RL01 server running ?");
-//  }
+  } else {
+    digitalWrite(LED_GREEN, LOW);
+    Serial.println("No reply, is the RL03 server running ?");
+  }
 }
